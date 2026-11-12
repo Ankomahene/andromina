@@ -1,0 +1,9 @@
+{
+  "name": "andromina-anonymous-messages",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Anonymous message page with a private dashboard",
+  "main": "server.js",
+  "scripts": { "start": "node server.js" },
+  "engines": { "node": ">=18" }
+}

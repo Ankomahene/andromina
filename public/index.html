@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Send {{OWNER}} an anonymous message 🤫</title>
+<meta name="description" content="Say what's on your mind — honest, anonymous, and totally private. Takes 10 seconds. No sign-up.">
+<meta name="theme-color" content="#12081f">
+<link rel="canonical" href="{{BASE}}/">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E💌%3C/text%3E%3C/svg%3E">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="{{OWNER}}'s Secret Inbox">
+<meta property="og:title" content="Send {{OWNER}} an anonymous message 🤫">
+<meta property="og:description" content="Honest. Anonymous. 10 seconds. Tell {{OWNER}} what's on your mind — she'll never know it was you.">
+<meta property="og:url" content="{{BASE}}/">
+<meta property="og:image" content="{{BASE}}/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Send {{OWNER}} an anonymous message">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Send {{OWNER}} an anonymous message 🤫">
+<meta name="twitter:description" content="Honest. Anonymous. 10 seconds. No sign-up.">
+<meta name="twitter:image" content="{{BASE}}/og.png">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/app.css">
+<style>
+  main{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:96px 16px 32px}
+  .card{width:min(520px,100%);padding:34px 28px 28px;text-align:center;animation:pop .7s cubic-bezier(.2,.9,.3,1.2) both}
+  @keyframes pop{from{opacity:0;transform:translateY(30px) scale(.94)}}
+  .avatar{width:92px;height:92px;margin:-78px auto 14px;border-radius:50%;display:grid;place-items:center;font:800 2.6rem Poppins,sans-serif;color:#fff;background:var(--grad);box-shadow:0 0 0 6px var(--bg),0 0 0 8px var(--a),0 14px 40px rgba(255,95,162,.5);animation:bob 4s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-6px) rotate(-3deg)}}
+  .pill{display:inline-block;font-size:.8rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:5px 12px;border-radius:99px;background:rgba(255,255,255,.12);border:1px solid var(--line);color:var(--muted);margin-bottom:12px}
+  h1{font-size:clamp(1.7rem,6vw,2.3rem);font-weight:800;margin-bottom:8px}
+  h1 b{background:linear-gradient(90deg,var(--a),var(--c),var(--b));background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:flow 5s linear infinite}
+  @keyframes flow{to{background-position:200% center}}
+  .sub{color:var(--muted);margin-bottom:20px}
+  .chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:14px}
+  .chip{border:1px solid var(--line);background:rgba(255,255,255,.08);border-radius:99px;padding:7px 13px;font-size:.85rem;cursor:pointer;transition:.2s}
+  .chip:hover{background:var(--grad);color:#fff;border-color:transparent;transform:translateY(-2px) rotate(-1.5deg)}
+  form{display:grid;gap:12px;text-align:left}
+  textarea{min-height:140px;resize:vertical}
+  .row{display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:var(--muted);padding:0 4px}
+  .hp{position:absolute;left:-9999px;opacity:0;height:0;width:0}
+  .safe{margin-top:16px;font-size:.8rem;color:var(--muted)}
+  .done{display:none;padding:10px 0}
+  .done .big{font-size:4rem;animation:tada 1s both}
+  @keyframes tada{0%{transform:scale(0) rotate(-30deg)}60%{transform:scale(1.25) rotate(8deg)}100%{transform:scale(1) rotate(0)}}
+  .done h2{font-size:1.7rem;margin:6px 0}
+  .done p{color:var(--muted);margin-bottom:18px}
+  .sent .done{display:block}.sent form,.sent .chips,.sent .sub,.sent h1,.sent .pill{display:none}
+  canvas{position:fixed;inset:0;pointer-events:none;z-index:50}
+  .shake{animation:shake .4s}
+  @keyframes shake{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+</style>
+</head>
+<body>
+<div class="bg"><i></i><i></i><i></i></div>
+<div class="emojis" id="emojis"></div>
+<canvas id="confetti"></canvas>
+
+<main>
+  <section class="card glass" id="card">
+    <div class="avatar" aria-hidden="true">{{INITIAL}}</div>
+    <span class="pill">🤫 Secret inbox</span>
+    <h1>Send <b>{{OWNER}}</b><br>an anonymous message</h1>
+    <p class="sub">Honest thoughts, a secret compliment, or just a hello. She'll never know it was you.</p>
+
+    <div class="chips" id="chips"></div>
+
+    <form id="form" autocomplete="off">
+      <textarea id="text" class="field" maxlength="1500" placeholder="Type your anonymous message here…" aria-label="Your message" required></textarea>
+      <div class="row"><span>🔒 Private &amp; anonymous</span><span id="count">0 / 1500</span></div>
+      <input id="name" class="field" maxlength="40" placeholder="Your first name (optional)" aria-label="Your first name (optional)">
+      <input class="hp" id="website" name="website" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="err" id="err" role="alert"></div>
+      <button class="btn" id="send" type="submit">Send message ✨</button>
+    </form>
+
+    <div class="done" role="status">
+      <div class="big">💌</div>
+      <h2>Message sent!</h2>
+      <p>Thank you for sharing. {{OWNER}} will see it soon. 💜</p>
+      <button class="btn" id="again" type="button">Send another</button>
+    </div>
+    <p class="safe">No account. No tracking. Your identity is never saved.</p>
+  </section>
+</main>
+
+<script>
+const $=s=>document.querySelector(s);
+const text=$('#text'),count=$('#count'),err=$('#err'),send=$('#send');
+
+// floating emojis
+const em=$('#emojis');
+['💜','✨','💌','🤫','💭','🌸','⭐','💫'].forEach((e,i)=>{
+  for(let k=0;k<2;k++){const s=document.createElement('span');s.textContent=e;
+    s.style.left=Math.random()*96+'%';s.style.fontSize=18+Math.random()*22+'px';
+    s.style.animationDuration=14+Math.random()*14+'s';s.style.animationDelay=-Math.random()*20+'s';em.appendChild(s);}
+});
+
+// idea chips
+const ideas=["Something I've never told you…","A secret compliment 💛","Honest advice for you","Never change, because…"];
+ideas.forEach(t=>{const b=document.createElement('button');b.type='button';b.className='chip';b.textContent=t;
+  b.onclick=()=>{text.value=(text.value?text.value+'\n':'')+t+' ';text.focus();count.textContent=text.value.length+' / 1500'};$('#chips').appendChild(b)});
+
+text.addEventListener('input',()=>count.textContent=text.value.length+' / 1500');
+
+$('#form').addEventListener('submit',async e=>{
+  e.preventDefault();err.textContent='';
+  if(text.value.trim().length<2){err.textContent='Write a little something first 💬';$('#card').classList.remove('shake');void $('#card').offsetWidth;$('#card').classList.add('shake');return}
+  send.disabled=true;send.textContent='Sending…';
+  try{
+    const r=await fetch('/api/messages',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text:text.value,name:$('#name').value,website:$('#website').value})});
+    const d=await r.json();
+    if(!r.ok)throw new Error(d.error||'Could not send');
+    text.value='';$('#name').value='';count.textContent='0 / 1500';
+    $('#card').classList.add('sent');boom();
+  }catch(x){err.textContent=x.message}
+  send.disabled=false;send.textContent='Send message ✨';
+});
+$('#again').onclick=()=>{$('#card').classList.remove('sent');text.focus()};
+
+// confetti
+function boom(){
+  const c=$('#confetti'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;
+  const cols=['#ff5fa2','#9b6bff','#ffb36b','#4ade80','#fff','#6bd6ff'];
+  const ps=Array.from({length:150},()=>({x:innerWidth/2,y:innerHeight/2.2,vx:(Math.random()-.5)*16,vy:Math.random()*-16-4,s:Math.random()*8+4,r:Math.random()*6,vr:(Math.random()-.5)*.3,c:cols[Math.random()*cols.length|0]}));
+  let f=0;(function tick(){x.clearRect(0,0,c.width,c.height);
+    ps.forEach(p=>{p.vy+=.35;p.x+=p.vx;p.y+=p.vy;p.r+=p.vr;x.save();x.translate(p.x,p.y);x.rotate(p.r);x.fillStyle=p.c;x.fillRect(-p.s/2,-p.s/4,p.s,p.s/2);x.restore()});
+    if(++f<160)requestAnimationFrame(tick);else x.clearRect(0,0,c.width,c.height)})();
+}
+</script>
+</body>
+</html>

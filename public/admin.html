@@ -1,0 +1,175 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Inbox · {{OWNER}}</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ctext y='.9em' font-size='90'%3E📬%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/app.css">
+<style>
+  .hidden{display:none!important}
+  /* login */
+  .login{min-height:100vh;min-height:100dvh;display:grid;place-items:center;padding:20px}
+  .login form{width:min(400px,100%);padding:32px 26px;display:grid;gap:12px;text-align:center;animation:pop .6s cubic-bezier(.2,.9,.3,1.2) both}
+  @keyframes pop{from{opacity:0;transform:translateY(24px) scale(.95)}}
+  .login .lock{font-size:3rem}
+  .login h1{font-size:1.6rem}.login p{color:var(--muted);font-size:.95rem;margin-bottom:6px}
+  .pin{letter-spacing:.5em;text-align:center;font-weight:700}
+  /* dashboard */
+  .wrap{width:min(780px,100%);margin:0 auto;padding:22px 16px 60px}
+  header{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:18px}
+  header h1{font-size:1.6rem}
+  header .acts{display:flex;gap:8px;flex-wrap:wrap}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px}
+  .stat{padding:16px;text-align:center}
+  .stat b{display:block;font:800 1.9rem Poppins,sans-serif;background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+  .stat span{font-size:.8rem;color:var(--muted);font-weight:600}
+  .share{padding:14px 16px;display:flex;gap:10px;align-items:center;margin-bottom:16px;flex-wrap:wrap}
+  .share code{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--muted);font-size:.9rem}
+  .tabs{display:flex;gap:8px;margin-bottom:14px;align-items:center}
+  .tab{border:1px solid var(--line);background:var(--glass);padding:8px 16px;border-radius:99px;cursor:pointer;font-weight:600;font-size:.9rem}
+  .tab.on{background:var(--grad);color:#fff;border-color:transparent}
+  .tabs .sp{flex:1}
+  .msg{padding:18px 20px;margin-bottom:12px;position:relative;animation:in .5s cubic-bezier(.2,.9,.3,1.1) both;transition:opacity .3s,transform .3s}
+  @keyframes in{from{opacity:0;transform:translateY(18px)}}
+  .msg.new{border-color:var(--a);box-shadow:0 0 0 1px var(--a),0 12px 40px rgba(255,95,162,.25)}
+  .msg.new::before{content:"NEW";position:absolute;top:-9px;right:16px;background:var(--grad);color:#fff;font:700 .68rem Inter;letter-spacing:.08em;padding:2px 10px;border-radius:99px}
+  .msg p{white-space:pre-wrap;word-break:break-word;font-size:1.05rem;margin-bottom:12px}
+  .meta{display:flex;justify-content:space-between;align-items:center;gap:8px;flex-wrap:wrap;font-size:.85rem;color:var(--muted)}
+  .from{font-weight:700;color:var(--ink)}
+  .meta .a{display:flex;gap:6px}
+  .mini{border:1px solid var(--line);background:transparent;border-radius:10px;padding:5px 10px;cursor:pointer;font-size:.8rem;font-weight:600}
+  .mini:hover{background:rgba(255,255,255,.15)}.mini.del:hover{background:var(--bad);color:#fff;border-color:transparent}
+  .empty{text-align:center;padding:50px 20px;color:var(--muted)}.empty .big{font-size:3.4rem;animation:bob 3s ease-in-out infinite}
+  @keyframes bob{50%{transform:translateY(-8px)}}
+  /* modal */
+  .modal{position:fixed;inset:0;background:rgba(10,0,25,.6);backdrop-filter:blur(6px);display:grid;place-items:center;padding:16px;z-index:20}
+  .modal form{width:min(380px,100%);padding:26px;display:grid;gap:12px;background:var(--bg);animation:pop .4s both}
+  .modal h2{font-size:1.3rem}
+  .ok{color:var(--ok);font-weight:600;font-size:.92rem;min-height:1.3em}
+  .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:var(--grad);color:#fff;padding:10px 20px;border-radius:99px;font-weight:700;transition:.35s;z-index:30}
+  .toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<div class="bg"><i></i><i></i><i></i></div>
+
+<section class="login hidden" id="login">
+  <form class="glass" id="loginForm">
+    <div class="lock">🔐</div>
+    <h1>Welcome back, {{OWNER}}</h1>
+    <p>Sign in to read your secret messages</p>
+    <input class="field" id="phone" type="tel" inputmode="tel" autocomplete="username" placeholder="Phone number" required>
+    <input class="field pin" id="pin" type="password" inputmode="numeric" autocomplete="current-password" placeholder="PIN" maxlength="8" required>
+    <div class="err" id="loginErr" role="alert"></div>
+    <button class="btn" type="submit">Unlock inbox 💌</button>
+  </form>
+</section>
+
+<div class="wrap hidden" id="dash">
+  <header>
+    <h1>💌 {{OWNER}}'s Inbox</h1>
+    <div class="acts">
+      <button class="btn ghost" id="settingsBtn">🔑 Change PIN</button>
+      <button class="btn ghost" id="logoutBtn">Log out</button>
+    </div>
+  </header>
+  <div class="stats">
+    <div class="stat glass"><b id="sTotal">0</b><span>Total</span></div>
+    <div class="stat glass"><b id="sNew">0</b><span>Unread</span></div>
+    <div class="stat glass"><b id="sToday">0</b><span>Today</span></div>
+  </div>
+  <div class="share glass">
+    <span>🔗</span><code id="link"></code>
+    <button class="btn ghost" id="copy">Copy link</button>
+    <button class="btn ghost hidden" id="shareBtn">Share</button>
+  </div>
+  <div class="tabs">
+    <button class="tab on" data-f="all">All</button>
+    <button class="tab" data-f="new">Unread</button>
+    <span class="sp"></span>
+    <button class="mini" id="readAll">✓ Mark all read</button>
+  </div>
+  <div id="list"></div>
+</div>
+
+<div class="modal hidden" id="modal">
+  <form class="glass" id="pinForm">
+    <h2>🔑 Change your PIN</h2>
+    <input class="field" id="curPin" type="password" inputmode="numeric" placeholder="Current PIN" maxlength="8" autocomplete="current-password" required>
+    <input class="field" id="newPin" type="password" inputmode="numeric" placeholder="New PIN (4–8 digits)" maxlength="8" autocomplete="new-password" required>
+    <div class="err" id="pinErr"></div><div class="ok" id="pinOk"></div>
+    <div style="display:flex;gap:8px"><button class="btn" style="flex:1" type="submit">Save PIN</button><button class="btn ghost" type="button" id="closeModal">Close</button></div>
+  </form>
+</div>
+<div class="toast" id="toast"></div>
+
+<script>
+const $=s=>document.querySelector(s);
+const api=(u,m='GET',b)=>fetch(u,{method:m,headers:{'Content-Type':'application/json'},body:b?JSON.stringify(b):undefined}).then(async r=>{const d=await r.json().catch(()=>({}));if(!r.ok){const e=new Error(d.error||'Error');e.status=r.status;throw e}return d});
+let msgs=[],filter='all',timer;
+const link=location.origin+'/';
+$('#link').textContent=link;
+
+function toast(t){const e=$('#toast');e.textContent=t;e.classList.add('show');setTimeout(()=>e.classList.remove('show'),1800)}
+function show(authed){$('#login').classList.toggle('hidden',authed);$('#dash').classList.toggle('hidden',!authed);
+  clearInterval(timer);if(authed){load();timer=setInterval(load,20000)}}
+
+function ago(t){const s=(Date.now()-t)/1000;if(s<60)return'just now';if(s<3600)return Math.floor(s/60)+'m ago';
+  if(s<86400)return Math.floor(s/3600)+'h ago';if(s<604800)return Math.floor(s/86400)+'d ago';
+  return new Date(t).toLocaleDateString(undefined,{month:'short',day:'numeric',year:'numeric'})}
+
+async function load(){
+  try{msgs=(await api('/api/messages')).messages;render()}
+  catch(e){if(e.status===401)show(false)}
+}
+function render(){
+  const start=new Date();start.setHours(0,0,0,0);
+  $('#sTotal').textContent=msgs.length;
+  $('#sNew').textContent=msgs.filter(m=>!m.read).length;
+  $('#sToday').textContent=msgs.filter(m=>m.createdAt>=start).length;
+  const list=$('#list'),items=msgs.filter(m=>filter==='all'||!m.read);
+  list.innerHTML='';
+  if(!items.length){list.innerHTML='<div class="empty"><div class="big">📭</div><p>'+(filter==='new'?'No unread messages. You\'re all caught up!':'No messages yet. Share your link and wait for the magic ✨')+'</p></div>';return}
+  items.forEach((m,i)=>{
+    const d=document.createElement('article');d.className='msg glass'+(m.read?'':' new');d.style.animationDelay=Math.min(i,8)*50+'ms';
+    const p=document.createElement('p');p.textContent=m.text;
+    const meta=document.createElement('div');meta.className='meta';
+    const who=document.createElement('span');
+    const from=document.createElement('span');from.className='from';from.textContent=m.name?'💬 '+m.name:'🤫 Anonymous';
+    who.append(from,' · '+ago(m.createdAt));
+    const a=document.createElement('div');a.className='a';
+    const r=document.createElement('button');r.className='mini';r.textContent=m.read?'Mark unread':'Mark read';
+    r.onclick=async()=>{await api('/api/messages/'+m.id+'/read','POST',{read:!m.read});m.read=!m.read;render()};
+    const x=document.createElement('button');x.className='mini del';x.textContent='Delete';
+    x.onclick=async()=>{if(!confirm('Delete this message permanently?'))return;d.style.opacity=0;d.style.transform='scale(.95)';
+      await api('/api/messages/'+m.id,'DELETE');msgs=msgs.filter(z=>z!==m);setTimeout(render,250)};
+    a.append(r,x);meta.append(who,a);d.append(p,meta);list.appendChild(d);
+  });
+}
+
+$('#loginForm').onsubmit=async e=>{e.preventDefault();$('#loginErr').textContent='';
+  try{await api('/api/login','POST',{phone:$('#phone').value,pin:$('#pin').value});$('#pin').value='';show(true)}
+  catch(x){$('#loginErr').textContent=x.message;$('#loginForm').animate([{transform:'translateX(-8px)'},{transform:'translateX(8px)'},{transform:'none'}],{duration:250})}};
+$('#logoutBtn').onclick=async()=>{await api('/api/logout','POST',{});show(false)};
+document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>{filter=t.dataset.f;document.querySelectorAll('.tab').forEach(z=>z.classList.toggle('on',z===t));render()});
+$('#readAll').onclick=async()=>{await api('/api/messages/read-all','POST',{});msgs.forEach(m=>m.read=true);render();toast('All caught up ✓')};
+$('#copy').onclick=async()=>{try{await navigator.clipboard.writeText(link);toast('Link copied! 🎉')}catch{prompt('Copy your link:',link)}};
+if(navigator.share){const b=$('#shareBtn');b.classList.remove('hidden');b.onclick=()=>navigator.share({title:'Send me an anonymous message 🤫',text:'Tell me anything — I\'ll never know who sent it 🤫',url:link}).catch(()=>{})}
+
+$('#settingsBtn').onclick=()=>{$('#pinErr').textContent=$('#pinOk').textContent='';$('#modal').classList.remove('hidden');$('#curPin').focus()};
+$('#closeModal').onclick=()=>$('#modal').classList.add('hidden');
+$('#modal').onclick=e=>{if(e.target.id==='modal')$('#modal').classList.add('hidden')};
+$('#pinForm').onsubmit=async e=>{e.preventDefault();$('#pinErr').textContent=$('#pinOk').textContent='';
+  try{await api('/api/change-pin','POST',{currentPin:$('#curPin').value,newPin:$('#newPin').value});
+    $('#pinOk').textContent='PIN updated ✓';$('#curPin').value=$('#newPin').value='';setTimeout(()=>$('#modal').classList.add('hidden'),1200)}
+  catch(x){$('#pinErr').textContent=x.message}};
+
+api('/api/me').then(d=>show(d.authed)).catch(()=>show(false));
+</script>
+</body>
+</html>
